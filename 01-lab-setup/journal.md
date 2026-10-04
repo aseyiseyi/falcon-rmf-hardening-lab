@@ -15,3 +15,12 @@ Renamed the host to FALCON-DC01 and set the time zone to Eastern. Accurate time 
 Issue: a live snapshot hung at 90% for over 20 minutes. Diagnosed with showvminfo (state stuck at livesnapshotting), powered off the VM, and took an offline snapshot instead, which completed in seconds.
 Lesson: take snapshots with the VM powered off.
 Snapshot 01-clean-install saved as the pre-hardening baseline.
+
+## Oct 4, 2026 (continued)
+Built FALCON-APP01 from the command line: Ubuntu Server 22.04.5, 4 GB RAM, 2 vCPU, 25 GB disk, LVM, OpenSSH server. DHCP assigned 10.10.10.4 on FALCON-NET.
+Left disk encryption (LUKS) and SSH password authentication enabled on purpose. Both will be documented as STIG findings and tracked in the POA&M.
+Issue: apt upgrade froze at 0% for over 25 minutes. Task Manager showed 0 MB/s disk and one CPU thread pinned, meaning the VM was hung rather than slow. Reset the VM and repaired the package database with dpkg --configure -a.
+Root cause investigation: the VirtualBox log showed "fall back to NEM: VT-x is not available." Windows was holding the CPU virtualization extensions, forcing VirtualBox into a slower compatibility mode. This also explained the earlier hung live snapshot.
+Disabling the hypervisor with bcdedit and turning off Memory Integrity was not enough. Querying Win32_DeviceGuard showed VBS still running, and the DeviceGuard registry keys showed it was being enforced by EnableVirtualizationBasedSecurity and Windows Hello Enhanced Sign-in Security. Disabled both, restarted, and confirmed in the log that VirtualBox now uses VT-x with nested paging.
+Risk decision: accepted reduced host hardening in exchange for a stable lab. Documented as reversible.
+Completed apt upgrade with zero pending updates. Snapshot 01-clean-install taken for FALCON-APP01.
