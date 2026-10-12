@@ -23,7 +23,7 @@ Of the 119 rules that were actually evaluated, the server failed 70.
 
 The 90 "not applicable" results are almost all audit logging rules. They don't apply because auditd isn't installed. That's the most important finding here: right now the server keeps no audit trail of who uses sudo, changes accounts, or mounts drives. Installing auditd will make those rules count, so I expect the number of evaluated rules to go up during hardening, and I'll need to pass those too.
 
-Attaching Ubuntu Pro also unlocked 9 ESM security updates. I left them unapplied on purpose so this baseline stays an accurate "before" picture. Patching is the first step of hardening.
+Attaching Ubuntu Pro also unlocked 9 ESM security updates. They were installed automatically by unattended-upgrades at 20:53, about 34 minutes after this scan, so the score above still reflects the unpatched state. I confirmed the timing in the unattended-upgrades log.
 
 The package manager also lists software the server doesn't need, like modemmanager and usb-modeswitch. Removing it falls under least functionality (NIST CM-7).
 
@@ -40,3 +40,4 @@ Both default installs fail more than half of the DoD requirements.
 
 Full report: [app01-usg-baseline.html](app01-usg-baseline.html) (download it to view; GitHub shows the raw HTML)
 Evidence: [screenshots/07-app01-baseline-score.png](../screenshots/07-app01-baseline-score.png)
+
