@@ -33,5 +33,14 @@ Completed apt upgrade with zero pending updates. Snapshot 01-clean-install taken
 Added an SSH port forward bound to 127.0.0.1:2222 so I can manage FALCON-APP01 from my host terminal instead of the VM console. Attached the server to Ubuntu Pro, installed USG, and ran the DISA STIG baseline audit: 40.78%. Found auditd isn't installed, which is why 90 audit rules came back not applicable. Copied the report to the host with scp. Phase 3 complete.
 
 
+
 ## Oct 11, 2026 (continued)
+
 Started Phase 4 on FALCON-APP01. Patched, removed 16 unneeded packages, installed auditd with 31 rules, and switched SSH to key-only. Ran a command on the wrong machine twice tonight (the key got generated on the server), so I now check the prompt before every command. Found my dpkg log was corrupted by the Oct 4 hard reset.
+
+## Oct 11, 2026 (late)
+
+Patched FALCON-DC01 with the 2026-09 cumulative update. The build went from 20348.587 to 20348.5622. Took snapshot 02-pre-hardening first. Copy and paste still doesn't work in DC01, so I keep commands short and type them one line at a time.
+
+## 
+
