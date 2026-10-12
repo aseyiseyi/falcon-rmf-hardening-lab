@@ -14,7 +14,7 @@ VirtualBox 7.2 on Windows 11, Windows Server 2022 Evaluation, Ubuntu Server 22.0
 ## Progress
 - [x] Phase 1: Lab and repo setup
 - [x] Phase 2: Build FALCON servers
-- [ ] Phase 3: Baseline scans
+- [x] Phase 3: Baseline scans
 - [ ] Phase 4: STIG hardening
 - [ ] Phase 5: Rescan and compare
 - [ ] Phase 6: Vulnerability management

@@ -1,6 +1,7 @@
 # Lab Journal
 
 ## Oct 3, 2026
+
 Downloaded Windows Server 2022 Evaluation and Ubuntu Server 22.04.5 ISOs.
 Installed VirtualBox 7.2.20 and the Extension Pack.
 Confirmed CPU virtualization is enabled (8 cores, 16 logical processors).
@@ -8,6 +9,7 @@ Issue: VirtualBox showed "Can't enumerate USB devices." USB passthrough is not n
 Installed Git and the GitHub CLI, authenticated to GitHub, and built the repo structure from PowerShell.
 
 ## Oct 4, 2026
+
 Created FALCON-NET, a NAT network (10.10.10.0/24) with DHCP, as the system's authorization boundary.
 Built FALCON-DC01 entirely from the command line with VBoxManage: 8 GB RAM, 4 vCPU, UEFI, 60 GB dynamic disk.
 Installed Windows Server 2022 Standard (Desktop Experience) and VirtualBox Guest Additions.
@@ -17,10 +19,16 @@ Lesson: take snapshots with the VM powered off.
 Snapshot 01-clean-install saved as the pre-hardening baseline.
 
 ## Oct 4, 2026 (continued)
+
 Built FALCON-APP01 from the command line: Ubuntu Server 22.04.5, 4 GB RAM, 2 vCPU, 25 GB disk, LVM, OpenSSH server. DHCP assigned 10.10.10.4 on FALCON-NET.
-Left disk encryption (LUKS) and SSH password authentication enabled on purpose. Both will be documented as STIG findings and tracked in the POA&M.
+Left disk encryption (LUKS) and SSH password authentication enabled on purpose. Both will be documented as STIG findings and tracked in the POA\&M.
 Issue: apt upgrade froze at 0% for over 25 minutes. Task Manager showed 0 MB/s disk and one CPU thread pinned, meaning the VM was hung rather than slow. Reset the VM and repaired the package database with dpkg --configure -a.
 Root cause investigation: the VirtualBox log showed "fall back to NEM: VT-x is not available." Windows was holding the CPU virtualization extensions, forcing VirtualBox into a slower compatibility mode. This also explained the earlier hung live snapshot.
-Disabling the hypervisor with bcdedit and turning off Memory Integrity was not enough. Querying Win32_DeviceGuard showed VBS still running, and the DeviceGuard registry keys showed it was being enforced by EnableVirtualizationBasedSecurity and Windows Hello Enhanced Sign-in Security. Disabled both, restarted, and confirmed in the log that VirtualBox now uses VT-x with nested paging.
+Disabling the hypervisor with bcdedit and turning off Memory Integrity was not enough. Querying Win32\_DeviceGuard showed VBS still running, and the DeviceGuard registry keys showed it was being enforced by EnableVirtualizationBasedSecurity and Windows Hello Enhanced Sign-in Security. Disabled both, restarted, and confirmed in the log that VirtualBox now uses VT-x with nested paging.
 Risk decision: accepted reduced host hardening in exchange for a stable lab. Documented as reversible.
 Completed apt upgrade with zero pending updates. Snapshot 01-clean-install taken for FALCON-APP01.
+
+## Oct 11, 2026
+
+Added an SSH port forward bound to 127.0.0.1:2222 so I can manage FALCON-APP01 from my host terminal instead of the VM console. Attached the server to Ubuntu Pro, installed USG, and ran the DISA STIG baseline audit: 40.78%. Found auditd isn't installed, which is why 90 audit rules came back not applicable. Copied the report to the host with scp. Phase 3 complete.
+
