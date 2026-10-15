@@ -65,3 +65,12 @@ After these fixes the score is **71.46%** (112 pass, 87 fail).
 **Lockout prevention.** Before enabling the firewall I added the SSH rule first, and after changing SSH crypto I tested a fresh login from my host while keeping the existing session open.
 
 Evidence for today is in [app01/](app01/): the SSH, sysctl, USB, and timeout config files, the effective SSH settings, and the firewall status.
+
+### Audit expansion (Oct 15, 4:30 PM)
+Added a second rules file (51-falcon-stig-extra.rules) covering extended attributes, ACL tools, rmdir, more privileged commands, root execution by group, and failed file access attempts (EACCES and EPERM). Loaded rules went from 31 to 61. Set auditd to warn at 25% free space and restricted audit log ownership to root. Tightened permissions on audit logs, rules files, journalctl, and the journal folder.
+
+Score: **75.57%** (147 pass, 52 fail).
+
+Lesson: sudo chmod 600 /var/log/audit/*.log failed because my own shell expanded the wildcard before sudo ran, and it couldn't read the root-only folder. Running the command with sudo sh -c fixed it.
+
+The remaining 52 failures are in [app01-fails-1636.txt](app01/app01-fails-1636.txt). A few rules I'd already fixed still fail because the scanner reads config files that disagree with the effective settings, for example X11Forwarding yes in the main sshd_config while my drop-in sets no.

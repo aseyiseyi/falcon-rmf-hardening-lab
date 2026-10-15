@@ -1,0 +1,4 @@
+log_group = root
+space_left = 25%
+space_left_action = email
+disk_full_action = SYSLOG
