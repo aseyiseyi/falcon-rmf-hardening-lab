@@ -1,0 +1,3 @@
+num_logs = 5
+max_log_file_action = ROTATE
+disk_full_action = HALT

@@ -74,3 +74,27 @@ Score: **75.57%** (147 pass, 52 fail).
 Lesson: sudo chmod 600 /var/log/audit/*.log failed because my own shell expanded the wildcard before sudo ran, and it couldn't read the root-only folder. Running the command with sudo sh -c fixed it.
 
 The remaining 52 failures are in [app01-fails-1636.txt](app01/app01-fails-1636.txt). A few rules I'd already fixed still fail because the scanner reads config files that disagree with the effective settings, for example X11Forwarding yes in the main sshd_config while my drop-in sets no.
+
+### Persistence and benchmark-guided fixes (Oct 15, 5:00 PM)
+
+A rescan showed several rules I had already fixed were still failing, so I investigated each one:
+
+- **X11 forwarding.** The main sshd_config still said `X11Forwarding yes`. My drop-in file was what SSH actually enforced, but the scanner reads the config files too, so I changed the main file to match.
+- **Journal permissions reverted after a reboot.** systemd-tmpfiles resets /var/log/journal at every boot, and my chmod had been undone. I created an override in /etc/tmpfiles.d/systemd.conf, which package updates won't overwrite, removed the ACL entries, and confirmed the fix survived a second reboot.
+- **Read the benchmark instead of guessing.** For the last three failures I pulled the official fix scripts out of the USG benchmark XML. That showed `ensure_rtc_utc_configuration` actually checks the system time zone, not the hardware clock, and that the banner needs line breaks between sections.
+
+Changes:
+
+| Change | NIST 800-53 |
+|---|---|
+| Set the system time zone to UTC (CAT I). FALCON-DC01 stays on Eastern, documented for the SSP | AU-8 |
+| Reformatted the DoD banner with section breaks, wrapped at 80 characters | AC-8 |
+| Made journal permissions permanent with a tmpfiles.d override and removed the ACLs | AU-9, CM-2 |
+| Set chrony maxpoll 16 on all pools and makestep 1 -1 | AU-8 |
+| Set audit log folder to 700 and disk_full_action to HALT | AU-5, AU-9 |
+
+**Why HALT is safe here:** auditd rotates its logs (`max_log_file_action = ROTATE`, `num_logs = 5`), so audit logs alone can't fill the disk, and the 25% warning fires well before that. If the disk does fill for another reason, the system stops rather than run without an audit trail.
+
+**Session timeout confirmed in practice.** My SSH session was automatically logged out after 10 minutes of inactivity, which shows the TMOUT control is enforced.
+
+Score: **81.23%** (154 pass, 45 fail).

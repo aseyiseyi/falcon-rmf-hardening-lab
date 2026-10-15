@@ -1,0 +1,5 @@
+20:pool ntp.ubuntu.com        iburst maxsources 4 maxpoll 16
+21:pool 0.ubuntu.pool.ntp.org iburst maxsources 1 maxpoll 16
+22:pool 1.ubuntu.pool.ntp.org iburst maxsources 1 maxpoll 16
+23:pool 2.ubuntu.pool.ntp.org iburst maxsources 2 maxpoll 16
+57:makestep 1 -1
