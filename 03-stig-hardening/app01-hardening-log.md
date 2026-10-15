@@ -30,3 +30,38 @@ Baseline before hardening: 40.78% on the Ubuntu 22.04 STIG V2R3. Before changing
 
 - [50-falcon-stig.rules](app01/50-falcon-stig.rules): audit rules
 - [00-falcon-hardening.conf](app01/00-falcon-hardening.conf): SSH hardening
+
+## October 15, 2026
+
+I rescanned after the October 11 work and the score rose from 40.78% to 61.91%. The fail count also went up, from 70 to 106. Installing auditd made about 80 audit rules applicable that couldn't be evaluated before, so the scan was checking more of the system, not finding it worse. I then triaged the remaining 106 failures by severity: 4 CAT I, 96 CAT II, and 6 CAT III.
+
+| Change | Why | NIST 800-53 |
+|---|---|---|
+| Masked ctrl-alt-del.target (CAT I) | Anyone at the console could reboot the server | CM-6 |
+| Set the hardware clock to UTC (CAT I) | Unambiguous timestamps in logs | AU-8 |
+| Added the DoD Notice and Consent Banner | Users must see the monitoring notice before login | AC-8 |
+| Restricted SSH ciphers, MACs, and key exchange to FIPS-approved algorithms | Weak algorithms can be broken or downgraded | SC-8, SC-13 |
+| Set a 10 minute SSH idle disconnect and disabled X11 forwarding and user environment | Unattended sessions are an open door; unused features are attack surface | AC-12, CM-7 |
+| Enabled full ASLR, SYN cookies, and dmesg restriction | Harder exploitation, flood protection, less information leakage | SI-16, SC-5 |
+| Blocked USB storage | Prevents data theft and malware through USB drives | CM-7, MP-7 |
+| Added a 10 minute idle shell timeout, installed vlock, set UMASK 077 | Session lock and private-by-default files | AC-11, AC-6 |
+| Enabled ufw with default deny incoming and rate-limited SSH | The server had no firewall | SC-7, AC-17 |
+| Replaced systemd-timesyncd with chrony | STIG requires chrony for accurate time | AU-8 |
+
+After these fixes the score is **71.46%** (112 pass, 87 fail).
+
+| Scan | Score | Pass | Fail |
+|---|---|---|---|
+| Baseline, Oct 11 | 40.78% | 49 | 70 |
+| After core fixes, Oct 15 | 61.91% | 92 | 106 |
+| After quick wins, Oct 15 | 71.46% | 112 | 87 |
+
+## Things I ran into
+
+**Banner typo turned into an information leak.** I mistyped the end marker for the banner file as `EOFz`, so Bash kept writing everything that followed into `/etc/issue.net`, including all of my SSH cipher settings. The banner is shown to anyone who connects, before login, so it was advertising my exact crypto configuration. I trimmed the file back to the single banner line and confirmed it with `wc -l` and a fresh connection.
+
+**Frozen scan.** A rescan hung with a lock error. `top` showed the CPU idle with 20 stopped tasks, and `ps` showed the scan processes in state T (stopped), most likely from stray text I pasted into the terminal. I killed them with `pkill`, using the pattern `[u]sg audit` so the command wouldn't match and kill my own SSH session, removed the stale lock, and reran the scan in the foreground.
+
+**Lockout prevention.** Before enabling the firewall I added the SSH rule first, and after changing SSH crypto I tested a fresh login from my host while keeping the existing session open.
+
+Evidence for today is in [app01/](app01/): the SSH, sysctl, USB, and timeout config files, the effective SSH settings, and the firewall status.
