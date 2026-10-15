@@ -47,3 +47,6 @@ Patched FALCON-DC01 with the 2026-09 cumulative update. The build went from 2034
 
 ## Oct 15, 2026
 APP01 went from 40.78% to 71.46% on the STIG today. Closed 2 of 4 CAT I findings and about 23 rules total. A typo in a heredoc leaked my SSH crypto settings into the login banner, and a scan froze because of pasted text. Both caught and fixed. Lesson: check the clipboard before pasting into a root shell.
+
+## Oct 15, 2026 (evening)
+Finished APP01: 95.43%, up from 40.78%. Added password policy, AIDE, and a GRUB password, and tested an unattended reboot. Chose not to apply one benchmark fix because it would have weakened security. Kept the GRUB hash out of the repo.

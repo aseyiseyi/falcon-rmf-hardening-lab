@@ -1,0 +1,10 @@
+# FALCON STIG password rules
+ucredit = -1
+lcredit = -1
+dcredit = -1
+ocredit = -1
+difok = 8
+minlen = 15
+dictcheck = 1
+enforcing = 1
+retry = 3

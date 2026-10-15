@@ -98,3 +98,35 @@ Changes:
 **Session timeout confirmed in practice.** My SSH session was automatically logged out after 10 minutes of inactivity, which shows the TMOUT control is enforced.
 
 Score: **81.23%** (154 pass, 45 fail).
+
+### Password policy, AIDE, and boot hardening (Oct 15, 5:15 to 6:00 PM)
+
+I made the PAM changes from a root shell so a mistake couldn't lock me out of admin rights, and I tested sudo with `su - falconadmin` after each change.
+
+| Change | NIST 800-53 |
+|---|---|
+| Password complexity: 15 character minimum, all four character types, 8 changed characters, dictionary check, enforced | IA-5 |
+| SHA-512 password hashing, 60 day maximum and 1 day minimum age, account disabled 35 days after expiry | IA-5, AC-2 |
+| Lockout after 3 failures in 15 minutes, 4 second delay after a failed login, at most 10 sessions per user | AC-7, AC-10 |
+| AIDE baseline of 131,373 files, daily check, audit tools protected, every check reported | SI-7, AU-9 |
+| GRUB password for editing boot entries, normal boots unrestricted | AC-3 |
+| Auditing from first boot (audit=1) | AU-14 |
+| Smart card packages installed but not enabled, ready for future CAC integration | IA-2(12) |
+
+**Lockout decision.** The STIG wants `unlock_time = 0`, meaning an admin has to unlock a locked account. I chose 900 seconds (automatic unlock after 15 minutes), because this server has a single administrator and no second account that could do the unlock. With the 15 character password policy, 3 guesses every 15 minutes isn't a practical attack. This is tracked as an accepted deviation in the POA&M.
+
+**Boot test.** After adding the GRUB password, I rebooted and confirmed the server came back without anyone at the console. `/proc/cmdline` shows `audit=1`. The GRUB password hash is deliberately not in this repo, because a published hash can be cracked offline.
+
+**A remediation I decided not to apply.** The benchmark's fix for `root_permissions_syslibrary_files` would change three library files to group root: the dbus launch helper, utempter, and a vlock module. Those groups are set on purpose to limit who can run privileged helpers. Changing them would break those helpers or widen access, so I documented it as an accepted deviation instead.
+
+**Final score: 95.43%** (181 pass, 18 fail), up from 40.78%.
+
+### Remaining 18 failures
+
+| Category | Rules | Status |
+|---|---|---|
+| Needs infrastructure this lab doesn't have | FIPS mode (CAT I), smart card / CAC (5), remote log server (3) | POA&M |
+| Accepted deviations | faillock unlock_time, library group ownership | POA&M, risk accepted |
+| Configured, scanner still disagrees | 4 faillock rules, fdisk and journal audit rules, journal folder permissions | POA&M, open for investigation |
+
+Full list: [app01-fails-final.txt](app01/app01-fails-final.txt)

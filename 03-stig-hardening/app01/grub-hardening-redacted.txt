@@ -1,0 +1,2 @@
+/etc/grub.d/40_custom:set superusers="grubadmin"
+/etc/grub.d/10_linux:CLASS="--class gnu-linux --class gnu --class os --unrestricted"
