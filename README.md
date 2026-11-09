@@ -1,4 +1,4 @@
-# FALCON: RMF Hardening Lab
+﻿# FALCON: RMF Hardening Lab
 
 ## Scenario
 FALCON is a fictional Air Force unit system made up of one Windows Server 2022 host and one Ubuntu 22.04 server. Acting as the system's ISSO, I harden, scan, assess, and package it for an Authorization to Operate using the DoD Risk Management Framework.
@@ -15,7 +15,7 @@ VirtualBox 7.2 on Windows 11, Windows Server 2022 Evaluation, Ubuntu Server 22.0
 - [x] Phase 1: Lab and repo setup
 - [x] Phase 2: Build FALCON servers
 - [x] Phase 3: Baseline scans
-- [ ] Phase 4: STIG hardening
+- [x] Phase 4: STIG hardening (APP01 95.43%, DC01 98.53%)
 - [ ] Phase 5: Rescan and compare
 - [ ] Phase 6: Vulnerability management
 - [ ] Phase 7: RMF package
