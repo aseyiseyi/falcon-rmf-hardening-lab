@@ -1,0 +1,7 @@
+99.27    IE_11_STIG-002.009.017.xml
+95.52    MS_Defender_Antivirus-002.009.015.xml
+85.71    MS_Dot_Net_Framework-002.008.015.xml
+98.21    MS_Edge_STIG-002.005.016.xml
+96.57    MS_Windows_Server_2022_STIG-002.010.019.xml
+100      Windows_Firewall_with_Advanced_Security-002.003.014.xml
+0        Windows_Updates
