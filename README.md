@@ -16,7 +16,7 @@ VirtualBox 7.2 on Windows 11, Windows Server 2022 Evaluation, Ubuntu Server 22.0
 - [x] Phase 2: Build FALCON servers
 - [x] Phase 3: Baseline scans
 - [x] Phase 4: STIG hardening (APP01 95.43%, DC01 98.53%)
-- [ ] Phase 5: Rescan and compare
+- [x] Phase 5: Rescan and compare (both systems more than doubled)
 - [ ] Phase 6: Vulnerability management
 - [ ] Phase 7: RMF package
 
